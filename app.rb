@@ -3,7 +3,7 @@ require('sinatra/reloader')
 also_reload('lib/**/*.rb')
 require('./lib/contacts')
 require('pry')
-
+require('capybara')
 get('/') do
   @list = Contact.all()
   erb(:input)
@@ -26,6 +26,28 @@ end
 get('/output/:id') do
   @id = params[:id]
   @contact = Contact.find(@id)
+  @address_list=Address.address()
   # @list = Contact.all()
   erb(:output)
+end
+
+post('/output/:id') do
+
+  @list = Contact.all()
+  @address_list = Address.address()
+  street = params["street"]
+  city = params["city"]
+  state = params["state"]
+  zip = params["zip"]
+  @id = params[:id]
+
+  # @contact_id = params[:id]
+  address = Address.new({:street=>street, :city=>city, :state=>state, :zip=>zip, :contact_id=>@id})
+  address.save_address()
+
+  @address_list=Address.address()
+  @contact = Contact.find(@id)
+
+  erb(:output)
+
 end
